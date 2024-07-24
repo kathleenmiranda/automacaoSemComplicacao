@@ -1,8 +1,10 @@
 package PlataformaFilmes;
 
+import groovy.util.logging.Log;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import maps.LoginMap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
@@ -25,23 +27,18 @@ public class PlataformarFilmesTest {
     public static void validarLoginMap(){
         RestUltils.setBaseURI("http://localhost:8080/");
 
-        Map<String, String> map = new HashMap<>();
-        map.put("email", "aluno@email.com");
-        map.put("senha","123456");
+        LoginMap.initLogin();
 
-        Response response = RestUltils.post(map, ContentType.JSON, "auth");
+        Response response = RestUltils.post(LoginMap.getLogin(), ContentType.JSON, "auth");
 
         assertEquals(200, response.statusCode());
-        token = response.jsonPath().get("token");
+       LoginMap.token = response.jsonPath().get("token");
     }
 
     @Test
     public void validarLogin(){
-        Map<String, String> map = new HashMap<>();
-        map.put("email", "aluno@email.com");
-        map.put("senha","123456");
-
-        Response response = RestUltils.post(map, ContentType.JSON, "auth");
+        LoginMap.initLogin();
+        Response response = RestUltils.post(LoginMap.getLogin(), ContentType.JSON, "auth");
 
         assertEquals(200, response.statusCode());
         token = response.jsonPath().get("token");
@@ -49,11 +46,8 @@ public class PlataformarFilmesTest {
 
     @Test
     public void validarLoginInvalido(){
-        Map<String, String> map = new HashMap<>();
-        map.put("email", "aluno@aluno.com");
-        map.put("senha","123456");
 
-        Response response = RestUltils.post(map, ContentType.JSON, "auth");
+        Response response = RestUltils.post(LoginMap.getLogin(), ContentType.JSON, "auth");
         assertEquals(400, response.statusCode());
     }
 
